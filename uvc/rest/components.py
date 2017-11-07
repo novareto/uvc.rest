@@ -1,23 +1,31 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2007-2013 NovaReto GmbH
-# cklinger@novareto.de
 
-import zope.location
-
-from zope import interface
-from grokcore.view import ViewSupport
-from grokcore.rest.interfaces import IREST
-from grokcore.component.interfaces import IContext
+import grok
+from zope.interface import Interface, implementer
 
 
-class IRESTService(IREST):
-    pass
+class ICORS(Interface):
+
+    def OPTIONS(request):
+        """Expose the CORS policy of the context.
+        """
 
 
-class RESTService(zope.location.Location, ViewSupport):
-    """Base class for REST views in Grok applications."""
-    interface.implements(IRESTService, IContext)
+class IRESTNode(Interface):
 
-    def __init__(self, context, request):
-        self.context = self.__parent__ = context
-        self.request = request
+    def publish(request):
+        """Returns a publishable result.
+        """
+
+
+@implementer(IRESTNode)
+class RESTNode(grok.Adapter):
+    grok.baseclass()
+    grok.context(Interface)
+
+    def __resolve__(self, request):
+        raise NotImplementedError('Code your own.')
+
+    def publish(self, request):
+        method = self.__resolve__(request)
+        return method(request)

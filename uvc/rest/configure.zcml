@@ -1,7 +1,16 @@
 <configure xmlns="http://namespaces.zope.org/zope"
   xmlns:grok="http://namespaces.zope.org/grok">
-
-  <include file="meta.zcml" />
+  
+  <include package="grok" />
+  <grok:grok package="." />
+  
+  <publisher
+    name="HTTP"
+    factory=".publication.RESTFactory"
+    methods="GET POST HEAD OPTIONS DELETE PUT"
+    mimetypes="*"
+    priority="50"
+    />
 
 </configure>
 
