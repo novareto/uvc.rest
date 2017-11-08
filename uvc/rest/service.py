@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import grok
-import uvcsite
 
 from zope.component import getMultiAdapter
 from zope.interface import Interface, Attribute, implementer
@@ -22,24 +21,25 @@ class IService(Interface):
 
 class Service(grok.MultiAdapter):
     grok.baseclass()
-    grok.adapts(uvcsite.IUVCSite, IHTTPRequest)
+#    grok.adapts(uvcsite.IUVCSite, IHTTPRequest)
     grok.implements(IPublishTraverse, IService)
     grok.provides(IService)
 
     layer = None
-    
+
     def __init__(self, context, request):
         self.context = context
         self.request = request
 
     def publishTraverse(self, request, name):
         raise NotImplementedError('implement me')
-    
-    
+
+
 class ServicesNamespace(grok.MultiAdapter):
+    grok.baseclass()
     grok.name('services')
     grok.provides(ITraversable)
-    grok.adapts(uvcsite.IUVCSite, IHTTPRequest)
+#    grok.adapts(uvcsite.IUVCSite, IHTTPRequest)
 
     def __init__(self, context, request):
         self.context = context

@@ -4,7 +4,25 @@ import uvc.rest
 
 from pkg_resources import resource_listdir
 from zope.testing import renormalizing
-from zope.app.wsgi.testlayer import BrowserLayer, http
+from zope.app.wsgi.testlayer import BrowserLayer
+import zope.testbrowser.wsgi
+from zope.app.wsgi.testlayer import NotInBrowserLayer, FakeResponse
+from webtest import TestRequest
+from StringIO import StringIO
+
+
+def http(string, handle_errors=True):
+    app = zope.testbrowser.wsgi.Layer.get_app()
+    if app is None:
+        raise NotInBrowserLayer(NotInBrowserLayer.__doc__)
+
+    request = TestRequest.from_file(StringIO(string))
+    request.environ['wsgi.handleErrors'] = handle_errors
+    request.environ['HTTP_X_UVCSITE_REST'] = 'service'
+    response = request.get_response(app)
+    return FakeResponse(response)
+
+
 
 FunctionalLayer = BrowserLayer(uvc.rest)
 
@@ -42,7 +60,6 @@ def suiteFromPackage(name):
             continue
 
         dottedname = 'uvc.rest.ftests.%s.%s' % (name, filename[:-3])
-        print dottedname
         test = doctest.DocTestSuite(
             dottedname,
             checker=checker,

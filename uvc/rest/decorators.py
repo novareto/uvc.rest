@@ -4,7 +4,7 @@ import json
 from functools import wraps
 from zope.security.management import checkPermission
 from zope.security.interfaces import Unauthorized, Forbidden
-from zope.app.security.interfaces import IUnauthenticatedPrincipal
+from zope.authentication.interfaces import IUnauthenticatedPrincipal
 
 
 def json_output(pretty_print=False, output_charset='utf-8'):

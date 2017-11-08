@@ -12,7 +12,7 @@ from zope.app.publication.requestpublicationfactories import (
 class RESTPublication(ZopePublicationSansProxy, HTTPPublication):
 
     def callObject(self, request, ob):
-        
+
         if request.method == 'OPTIONS':
             # Our request is an OPTIONS request.
             # To statisfy the CORS requirements, we answer.
@@ -30,7 +30,7 @@ class RESTPublication(ZopePublicationSansProxy, HTTPPublication):
             # The returned object is already a REST node
             return ob.publish(request)
         else:
-            # We make sure the 
+            # We make sure the
             name = request.environment['HTTP_X_UVCSITE_REST'].lower()
             restnode = queryAdapter(ob, IRESTNode, name=name)
             if restnode is None:
@@ -41,7 +41,7 @@ class RESTPublication(ZopePublicationSansProxy, HTTPPublication):
 class RESTFactory(HTTPFactory):
 
     def canHandle(self, environ):
-        """Our REST factory only accepts requests with our custom header or 
+        """Our REST factory only accepts requests with our custom header or
            the OPTIONS method.
         """
         return (
