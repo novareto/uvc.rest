@@ -27,39 +27,100 @@ BASIC REST
 SERVICES
 --------
 
+  >>> response = http_call('OPTIONS', 'http://localhost/app/++services++')
+  Traceback (most recent call last):
+  ...
+  NotImplementedError: Please specify a service.
+
+  >>> response = http_call('OPTIONS', 'http://localhost/app/++services++test')
+  Traceback (most recent call last):
+  ...
+  LookupError: Unknown service : test
+
+  >>> response = http_call('GET', 'http://localhost/app/++services++json/dump')
+  >>> print response.getBody()
+  {"SomeKey": "SomeValue"}
+
+  >>> response = http_call('OPTIONS', 'http://localhost/app/++services++json/dump')
+  Traceback (most recent call last):
+  ...
+  Unauthorized
+
+  >>> response = http_call('GET', 'http://localhost/app/++services++json/delete')
+  >>> print response.getBody()
+  DELETED !!
+
+  >>> response = http_call('PUT', 'http://localhost/app/++services++json/delete')
+  >>> print response.getBody()
+  DELETED !!
+
+  >>> response = http_call('DELETE', 'http://localhost/app/++services++json/delete')
+  >>> print response.getBody()
+  DELETED !!
+
+
 """
 
-
+import json
 import grokcore.component as grok
 
-from grokcore import content
-from uvc.rest.components import RESTNode, ICORS
-from zope.interface import Interface, implementer
+from grokcore.site import Application
+from uvc.rest.components import IRESTNode, RESTAdapter, ICORS
+from uvc.rest.components import http_method_resolve
+from uvc.rest.service import Endpoint, EndpointsDispatcher
+from zope.interface import Interface, implementer, provider
+
+
+def http_method_resolve(inst, request):
+    httpmethod = request.method.upper()
+    method = getattr(inst, httpmethod, None)
+    if method is not None:
+        return method
+    raise NotImplementedError(
+        "`%s` method has no bound resolver." % httpmethod)
 
 
 class IFoo(Interface):
     pass
 
 
-class MyApp(content.Container):
+class MyApp(Application):
     pass
 
 
-class NoCorsApp(content.Container):
+class NoCorsApp(Application):
     pass
 
 
-class RestServie(RESTNode):
+class Dump(Endpoint):
+
+    __resolve__ = http_method_resolve
+    
+    def GET(self, request):
+        return json.dumps({"SomeKey": "SomeValue"})
+
+
+def remover(context):
+    @provider(IRESTNode)
+    def do_delete(request):
+        return "DELETED !!"
+    return do_delete
+
+
+class JSON(EndpointsDispatcher):
+    grok.name('json')
+
+    endpoints = {
+        'dump': Dump,
+        'delete': remover,
+        }
+
+
+class RestService(RESTAdapter):
     grok.context(MyApp)
     grok.name('service')
 
-    def __resolve__(self, request):
-        httpmethod = request.method.upper()
-        method = getattr(self, httpmethod, None)
-        if method is not None:
-            return method
-        raise NotImplementedError(
-                "`%s` method has no bound resolver." % httpmethod)
+    __resolve__ = http_method_resolve
 
     def GET(self, request):
         return "HI FROM GET"
