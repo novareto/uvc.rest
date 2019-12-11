@@ -42,5 +42,6 @@ setup(name='uvc.rest',
           'zope.interface',
           'zope.publisher >= 4.2.2',
           'zope.app.publication',
+          'gocept.webtoken'
       ],
       )
