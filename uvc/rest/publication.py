@@ -10,7 +10,6 @@ from zope.app.publication.requestpublicationfactories import HTTPFactory
 
 class RESTPublication(ZopePublicationSansProxy, HTTPPublication):
     def callObject(self, request, ob):
-
         if request.method == "OPTIONS":
             # Our request is an OPTIONS request.
             # To statisfy the CORS requirements, we answer.

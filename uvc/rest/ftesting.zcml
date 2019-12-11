@@ -13,5 +13,6 @@
 -->
    <include package="uvc.rest" />
    <grok:grok package=".tests.fixtures.app" />
+   <grok:grok package=".tests.fixtures.auth_app" />
 </configure>
 

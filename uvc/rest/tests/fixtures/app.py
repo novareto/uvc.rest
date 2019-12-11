@@ -77,4 +77,4 @@ class AllowAll(grok.Adapter):
         request.response.setHeader(
             "Access-Control-Allow-Origin", "http://localhost:8080"
         )
-        return b''
+        return b""
