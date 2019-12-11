@@ -7,7 +7,7 @@ from zope.security.interfaces import Unauthorized, Forbidden
 from zope.authentication.interfaces import IUnauthenticatedPrincipal
 
 
-def json_output(pretty_print=False, output_charset='utf-8'):
+def json_output(pretty_print=False, output_charset="utf-8"):
     def json_encoded(method):
         @wraps(method)
         def __call__(node, request):
@@ -18,7 +18,9 @@ def json_output(pretty_print=False, output_charset='utf-8'):
                 indent=pretty_print and 4 or None,
                 sort_keys=pretty_print,
             )
+
         return __call__
+
     return json_encoded
 
 
@@ -32,7 +34,9 @@ def secure(permission):
                     raise Unauthorized
                 raise Forbidden
             return method(node, request)
+
         return __call__
+
     return secured_method
 
 
@@ -42,5 +46,7 @@ def content_type(ct):
         def __call__(node, request):
             request.response.setHeader("Content-type", ct)
             return method(node, request)
+
         return __call__
+
     return typed_response

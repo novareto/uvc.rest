@@ -19,7 +19,7 @@ class IServicePublication(Interface):
 
 
 class IService(Interface):
-    layer = Attribute('Dedicated skin layer')
+    layer = Attribute("Dedicated skin layer")
 
 
 @implementer(IBrowserPublisher)
@@ -28,10 +28,11 @@ class Endpoint(RESTNode):
     It is usually used as Service actions. See `EndpointsDispatcher` in
     this module.
     """
+
     def browserDefault(self, request):
         return self, None
 
-    
+
 class Service(grok.MultiAdapter):
     grok.baseclass()
     grok.adapts(IApplication, IHTTPRequest)
@@ -45,14 +46,13 @@ class Service(grok.MultiAdapter):
         self.request = request
 
     def publishTraverse(self, request, name):
-        raise NotImplementedError('implement me')
+        raise NotImplementedError("implement me")
 
 
 class EndpointsDispatcher(Service):
     grok.baseclass()
-    
-    endpoints = {
-        }
+
+    endpoints = {}
 
     def publishTraverse(self, request, name):
         endpoint = self.endpoints.get(name, None)
@@ -61,7 +61,7 @@ class EndpointsDispatcher(Service):
 
 
 class ServicesNamespace(grok.MultiAdapter):
-    grok.name('services')
+    grok.name("services")
     grok.provides(ITraversable)
     grok.adapts(IApplication, IHTTPRequest)
 
@@ -71,15 +71,13 @@ class ServicesNamespace(grok.MultiAdapter):
 
     def traverse(self, name, ignore):
         if not name:
-            raise NotImplementedError('Please specify a service.')
+            raise NotImplementedError("Please specify a service.")
 
-        service = queryMultiAdapter(
-            (self.context, self.request), IService, name=name)
+        service = queryMultiAdapter((self.context, self.request), IService, name=name)
 
         if service is None:
-            raise LookupError('Unknown service : %s' % name)
-        else: 
+            raise LookupError("Unknown service : %s" % name)
+        else:
             if service.layer is not None:
                 applySkin(self.request, service.layer)
-            return LocationProxy(
-                service, self.context, "++services++%s" % name)
+            return LocationProxy(service, self.context, "++services++%s" % name)
