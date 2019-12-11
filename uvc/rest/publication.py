@@ -26,14 +26,14 @@ class RESTPublication(ZopePublicationSansProxy, HTTPPublication):
             return cors.OPTIONS(request)
         elif IRESTNode.providedBy(ob):
             # The returned object is already a REST node
-            return ob(request)
+            return ob(request).encode('utf-8')
         else:
             # We make sure the
             name = request.environment["HTTP_X_UVCSITE_REST"].lower()
             restnode = queryAdapter(ob, IRESTNode, name=name)
             if restnode is None:
                 raise NotImplementedError("No REST node %s" % name)
-            return restnode(request)
+            return restnode(request).encode('utf-8')
 
 
 class RESTFactory(HTTPFactory):
