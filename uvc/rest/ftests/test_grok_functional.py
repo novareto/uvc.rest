@@ -8,7 +8,7 @@ from zope.app.wsgi.testlayer import BrowserLayer
 import zope.testbrowser.wsgi
 from zope.app.wsgi.testlayer import NotInBrowserLayer, FakeResponse
 from webtest import TestRequest
-from StringIO import StringIO
+from six import StringIO
 
 
 def http(string, handle_errors=True):
@@ -50,6 +50,7 @@ def http_call(method, path, data=None, **kw):
         request_string += data
     return http(request_string, handle_errors=False)
 
+
 def suiteFromPackage(name):
     files = resource_listdir(__name__, name)
     suite = unittest.TestSuite()
@@ -73,6 +74,7 @@ def suiteFromPackage(name):
 
         suite.addTest(test)
     return suite
+
 
 def test_suite():
     suite = unittest.TestSuite()

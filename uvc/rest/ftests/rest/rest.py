@@ -16,7 +16,7 @@ BASIC REST
   Unauthorized
 
   >>> response = http_call('GET', 'http://localhost/app')
-  >>> print response.getBody()
+  >>> print(response.getBody())
   HI FROM GET
 
   >>> response = http_call('POST', 'http://locahost/app')
@@ -38,7 +38,7 @@ SERVICES
   LookupError: Unknown service : test
 
   >>> response = http_call('GET', 'http://localhost/app/++services++json/dump')
-  >>> print response.getBody()
+  >>> print(response.getBody())
   {"SomeKey": "SomeValue"}
 
   >>> response = http_call('OPTIONS', 'http://localhost/app/++services++json/dump')
@@ -47,15 +47,15 @@ SERVICES
   Unauthorized
 
   >>> response = http_call('GET', 'http://localhost/app/++services++json/delete')
-  >>> print response.getBody()
+  >>> print(response.getBody())
   DELETED !!
 
   >>> response = http_call('PUT', 'http://localhost/app/++services++json/delete')
-  >>> print response.getBody()
+  >>> print(response.getBody())
   DELETED !!
 
   >>> response = http_call('DELETE', 'http://localhost/app/++services++json/delete')
-  >>> print response.getBody()
+  >>> print(response.getBody())
   DELETED !!
 
 
@@ -76,8 +76,7 @@ def http_method_resolve(inst, request):
     method = getattr(inst, httpmethod, None)
     if method is not None:
         return method
-    raise NotImplementedError(
-        "`%s` method has no bound resolver." % httpmethod)
+    raise NotImplementedError("`%s` method has no bound resolver." % httpmethod)
 
 
 class IFoo(Interface):
@@ -95,7 +94,7 @@ class NoCorsApp(Application):
 class Dump(Endpoint):
 
     __resolve__ = http_method_resolve
-    
+
     def GET(self, request):
         return json.dumps({"SomeKey": "SomeValue"})
 
@@ -104,21 +103,19 @@ def remover(context):
     @provider(IRESTNode)
     def do_delete(request):
         return "DELETED !!"
+
     return do_delete
 
 
 class JSON(EndpointsDispatcher):
-    grok.name('json')
+    grok.name("json")
 
-    endpoints = {
-        'dump': Dump,
-        'delete': remover,
-        }
+    endpoints = {"dump": Dump, "delete": remover}
 
 
 class RestService(RESTAdapter):
     grok.context(MyApp)
-    grok.name('service')
+    grok.name("service")
 
     __resolve__ = http_method_resolve
 
@@ -130,11 +127,12 @@ class RestService(RESTAdapter):
 class AllowAll(grok.Adapter):
     """Very generic CORS allowance. Works site-wide
     """
+
     grok.context(MyApp)
 
     def OPTIONS(self, request):
+        request.response.setHeader("Access-Control-Allow-Methods", "PUT")
         request.response.setHeader(
-            'Access-Control-Allow-Methods', 'PUT')
-        request.response.setHeader(
-                'Access-Control-Allow-Origin', 'http://localhost:8080')
+            "Access-Control-Allow-Origin", "http://localhost:8080"
+        )
         return
